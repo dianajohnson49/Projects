@@ -8,10 +8,47 @@ import pandas as pd
 import numpy as np
 
 """
+Linear Regression
+
+Parameters
+    X: data matrix
+    y: class labels
+    alpha: learning rate
+    epochs: number of epochs
+Returns
+    None
+"""
+def LinearRegression(X, y, alpha, epochs):
+    # Check if normal equation can be applied
+    if X.shape[1] == np.linalg.matrix_rank(X):
+        print("Using Normal Equation Solver\n")
+        NormalEquationSolver(X,y)
+
+    # If not, use gradient descent
+    else:
+        print("Using Gradient Based Solver\n")
+        GradientBasedSolver(X,y,alpha,epochs)
 
 """
-def LinearRegression(X, y):
-    pass
+NormalEquationSolver()
+
+Parameters:
+    X: data matrix
+    y: outcome matrix (class labels)
+Returns:
+    None
+"""
+def NormalEquationSolver(X, y):
+    # Calculating optimal weights
+    w = np.linalg.inv((X.T @ X)) @ (X.T @ y)
+
+    # Calculating RSS
+    Residual_SS = (y - (X @ w)).T @ (y - (X @ w))
+
+    # Print results
+    print(f"Optimal Weight Vector: {w}")
+    print(f"RSS: {Residual_SS}")
+    
 
 def GradientBasedSolver(X, y, alpha, epochs):
     pass
@@ -32,9 +69,5 @@ def main():
     X = data.iloc[:,:-1].values
     y = data.iloc[:, -1].values
 
-    if X.shape[1] == np.linalg.matrix_rank(X):
-        LinearRegression(X,y)
-    else:
-        GradientBasedSolver(X,y,alpha,epochs)
 
 main()
