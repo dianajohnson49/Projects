@@ -8,7 +8,8 @@ import pandas as pd
 import numpy as np
 
 """
-Linear Regression
+LinearRegression() : Checks if Normal Equation can be applied to a given input and calls
+                    the Normal Equation Solver. If not, the Gradient Based Solver is called.
 
 Parameters
     X: data matrix
@@ -30,7 +31,7 @@ def LinearRegression(X, y, alpha, epochs):
         GradientBasedSolver(X,y,alpha,epochs)
 
 """
-NormalEquationSolver()
+NormalEquationSolver() : Solves linear regression problem using the Normal Equation
 
 Parameters:
     X: data matrix
@@ -50,10 +51,25 @@ def NormalEquationSolver(X, y):
     print(f"RSS: {Residual_SS}")
     
 
+"""
+GradientBasedSolver() : Solves linear regression problem using Gradient Descent
+
+Parameters:
+    X: data matrix
+    y: class labels
+    alpha: learning rate
+    epochs: number of epochs
+Returns:
+    None
+"""
 def GradientBasedSolver(X, y, alpha, epochs):
     pass
 
+"""
+main()
 
+Main driver class
+"""
 def main():
     # TODO: Replace with command line arguments
     """
@@ -62,12 +78,13 @@ def main():
     alpha = sys.argv[2]
     epochs = sys.argv [3]
     """
-    data = pd.read_csv("sample_data.csv")
+    data = pd.read_csv("normal_solver_data.csv")
     alpha = 0.02
     epochs = 100
 
     X = data.iloc[:,:-1].values
     y = data.iloc[:, -1].values
+
 
 
 main()
