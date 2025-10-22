@@ -6,6 +6,7 @@ Diana Johnson
 import sys
 import pandas as pd
 import numpy as np
+import matplotlib as plt
 
 """
 LinearRegression() : Checks if Normal Equation can be applied to a given input and calls
