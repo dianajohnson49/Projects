@@ -6,7 +6,7 @@ Diana Johnson
 import sys
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 """
 LinearRegression() : Checks if Normal Equation can be applied to a given input and calls
@@ -43,13 +43,14 @@ Returns:
 def NormalEquationSolver(X, y):
     # Calculating optimal weights
     w = np.linalg.inv((X.T @ X)) @ (X.T @ y)
+    predictions = X @ w
 
     # Calculating RSS
-    Residual_SS = (y - (X @ w)).T @ (y - (X @ w))
+    rss = np.sum((y-predictions)**2)
 
     # Print results
     print(f"Optimal Weight Vector: {w}")
-    print(f"RSS: {Residual_SS}")
+    print(f"RSS: {rss}")
     
 
 """
@@ -64,8 +65,49 @@ Returns:
     None
 """
 def GradientBasedSolver(X, y, alpha, epochs):
-    for i in range(epochs):
-        print(i)
+    num_samples, num_features = X.shape
+    y = y.reshape(-1,1)
+    w = np.zeros((num_features,1))
+
+    # find cost of Wo
+    predictions = X @ w
+    current_cost = 0.5 * np.sum((y - predictions) ** 2)
+
+    rss_list = [] 
+    goal_cost = 10e-5
+
+    print(f"Initial RSS: {current_cost}")
+    
+    for epoch in range(epochs):
+        # Calculate the gradient
+        gradient = (X.T @ X) @ w - X.T @ y
+
+        # Update weights
+        w = w - alpha * gradient
+
+        # Calculate new RSS
+        predictions = X @ w
+        current_cost = 0.5 * np.sum((y - predictions) ** 2)
+
+        rss_list.append(current_cost)
+
+        print(f"Epoch {epoch + 1}: RSS = {current_cost}")
+
+        # Check current cost/error
+        if current_cost <= goal_cost:
+            break
+    
+    print(f"Learned Weights: {w.flatten()}")
+
+    plt.figure()
+
+    plt.plot(range(1, len(rss_list)+1), rss_list)
+    plt.title("Gradient Descent Convergence")
+    plt.xlabel("Epoch")
+    plt.ylabel("RSS")
+
+    plt.grid(True)
+    plt.show()
 
 
 """
@@ -80,14 +122,13 @@ def main():
     epochs = sys.argv [3]
     """
     data = pd.read_csv("gradient_descent_data.csv")
-    alpha = 0.02
+    alpha = 0.001
     epochs = 100
 
     X = data.iloc[:,:-1].values
     y = data.iloc[:, -1].values
 
     LinearRegression(X, y, alpha, epochs)
-
 
 
 main()
