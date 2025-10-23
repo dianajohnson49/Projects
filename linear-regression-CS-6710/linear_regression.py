@@ -109,21 +109,30 @@ def GradientBasedSolver(X, y, alpha, epochs):
     plt.grid(True)
     plt.show()
 
+def split_data(data_mat):
+    pass
 
 """
 main() : Main driver class
 """
 def main():
-    # TODO: Replace with command line arguments
-    """
+    
+    if len(sys.argv) < 4 or len(sys.argv) > 5:
+        print("Correct format: 'python linear_regression.py data_file alpha epochs "
+        "(FOR SPLITTING DATA): boolean (True or False)'")
+        return
+
     data_file = sys.argv[1]
     data = pd.read_csv(data_file)
     alpha = sys.argv[2]
     epochs = sys.argv [3]
-    """
-    data = pd.read_csv("gradient_descent_data.csv")
-    alpha = 0.001
-    epochs = 100
+    
+    if sys.argv[4]:
+        if sys.argv[4] == "True":
+            print("Splitting data into 70/30")
+            split_data(data)
+        else:
+            pass
 
     X = data.iloc[:,:-1].values
     y = data.iloc[:, -1].values
