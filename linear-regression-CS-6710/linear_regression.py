@@ -64,12 +64,12 @@ Returns:
     None
 """
 def GradientBasedSolver(X, y, alpha, epochs):
-    pass
+    for i in range(epochs):
+        print(i)
+
 
 """
-main()
-
-Main driver class
+main() : Main driver class
 """
 def main():
     # TODO: Replace with command line arguments
@@ -79,12 +79,14 @@ def main():
     alpha = sys.argv[2]
     epochs = sys.argv [3]
     """
-    data = pd.read_csv("normal_solver_data.csv")
+    data = pd.read_csv("gradient_descent_data.csv")
     alpha = 0.02
     epochs = 100
 
     X = data.iloc[:,:-1].values
     y = data.iloc[:, -1].values
+
+    LinearRegression(X, y, alpha, epochs)
 
 
 
