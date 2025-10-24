@@ -173,9 +173,31 @@ def add_bias(X):
     return X_bias
 
 def run_tests(X_test, y_test, weights):
-    accuracy = 0
-    rss = 0
+    """
+    run_tests() : Uses calculated weights to predict on test data and computes accuracy
 
+    Parameters:
+        X_test: X test data
+        y_test: y test data labels
+        weights: final weights computed in linear regression solver
+
+    Returns:
+        accuracy: mean accuracy
+        rss: error
+    """
+    # turn y into column vector
+    x_test = X_test
+    y_test = y_test.reshape(-1,1)
+
+    # predict
+    predictions = x_test @ weights
+
+    rss = 0.5 * np.sum((y_test-predictions)**2)
+
+    y_pred_labels = np.sign(predictions)
+
+    # compare
+    accuracy = np.mean(y_pred_labels == y_test)
     return accuracy, rss
 
 def main():
@@ -218,7 +240,9 @@ def main():
         for i in range(10):
             print("Splitting data...")
             X_train, y_train, X_test, y_test = split_data(data)
+            # add bias column
             X_train = add_bias(X_train)
+            X_test = add_bias(X_test)
 
             final_weights = LinearRegression(X_train, y_train, alpha, epochs)
             print(f"Final weights: {final_weights}")
@@ -233,10 +257,13 @@ def main():
         mean_acc = sum(accuracy_list)/len(accuracy_list)
         st_dev = (pd.Series(accuracy_list)).std()
         print(f"Mean accuracy: {mean_acc} | Standard Deviation: {st_dev}")
+        print(f"\nAccuracy list: {accuracy_list}")
+        print(f"\nRSS list: {rss_list}")
 
     # if no split, run as normal           
     else:
         X = data.iloc[:,:-1].values
+        # add bias column
         X = add_bias(X)
         y = data.iloc[:, -1].values
         final_weights = LinearRegression(X, y, alpha, epochs)
