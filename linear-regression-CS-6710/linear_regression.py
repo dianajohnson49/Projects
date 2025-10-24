@@ -40,7 +40,7 @@ def NormalEquationSolver(X, y):
         X: data matrix
         y: outcome matrix (class labels)
     Returns:
-        None
+        w: weight vector
     """
     # Calculating optimal weights
     w = np.linalg.inv((X.T @ X)) @ (X.T @ y)
@@ -52,6 +52,8 @@ def NormalEquationSolver(X, y):
     # Print results
     print(f"Optimal Weight Vector: {w}")
     print(f"RSS: {rss}")
+
+    return w
     
 
 
@@ -65,7 +67,7 @@ def GradientBasedSolver(X, y, alpha, epochs):
         alpha: learning rate
         epochs: number of epochs
     Returns:
-        None
+        w: weight vector
     """
     epochs = int(epochs)
     alpha = float(alpha)
@@ -112,6 +114,8 @@ def GradientBasedSolver(X, y, alpha, epochs):
 
     plt.grid(True)
     plt.show()
+
+    return w
 
 def split_data(data):
     """
@@ -166,9 +170,15 @@ def add_bias(X):
 
     return X_bias
 
+def run_tests(X_test, y_test, weights):
+    accuracy = 0
+    rss = 0
+
+    return accuracy, rss
+
 def main():
     """
-    main() : Main driver class
+    main() : Main driver method
     """
     if len(sys.argv) < 4 or len(sys.argv) > 5:
         print("Correct format: 'python linear_regression.py data_file alpha epochs "
@@ -189,17 +199,31 @@ def main():
             pass
 
     if split_flag:
+        accuracy_list = []
+        rss_list = []
+
         for i in range(10):
             print("Splitting data...")
             X_train, y_train, X_test, y_test = split_data(data)
             X_train = add_bias(X_train)
-            LinearRegression(X_train, y_train, alpha, epochs)
+            final_weights = LinearRegression(X_train, y_train, alpha, epochs)
+
+            accuracy, rss = run_tests(X_test,y_test, final_weights)
+            accuracy_list.append(accuracy)
+            rss_list.append(rss)
+
+        mean_acc = sum(accuracy_list)/len(accuracy_list)
+        st_dev = (pd.Series(accuracy_list)).std()
+        print(f"Mean accuracy: {mean_acc} | Standard Deviation: {st_dev}")
+
+            
     else:
         X = data.iloc[:,:-1].values
         X = add_bias(X)
-        print(X)
         y = data.iloc[:, -1].values
-        LinearRegression(X, y, alpha, epochs)
+        final_weights = LinearRegression(X, y, alpha, epochs)
+
+
 
 
 main()
