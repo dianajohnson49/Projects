@@ -129,12 +129,21 @@ def split_data(data):
     num_samples = X.shape[0]
 
     train_ratio = 0.7
+    train_size = int(train_ratio * num_samples)
 
-    
-    X_train = 
-    y_train = 
-    X_test = 
-    y_test = 
+    # use indices to shuffle data for random split
+    indices = np.arange(num_samples)
+    np.random.shuffle(indices)
+
+    # pull out indices for train and test
+    train_idx = indices[:train_size]
+    test_idx = indices[train_size:]
+
+    # find X and y datasets
+    X_train = X[train_idx]
+    y_train = y[train_idx]
+    X_test = X[test_idx]
+    y_test = y[test_idx]
 
     return X_train, y_train, X_test, y_test
 
@@ -180,7 +189,7 @@ def main():
             pass
 
     if split_flag:
-        for i in range(1,10):
+        for i in range(10):
             print("Splitting data...")
             X_train, y_train, X_test, y_test = split_data(data)
             X_train = add_bias(X_train)
