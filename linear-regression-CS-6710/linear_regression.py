@@ -115,7 +115,7 @@ def GradientBasedSolver(X, y, alpha, epochs):
     plt.ylabel("RSS")
 
     plt.grid(True)
-    plt.show()
+    plt.show(block=False)
 
     return w
 
@@ -226,7 +226,7 @@ def main():
     # check if data needs split
     split_flag = False
     if len(sys.argv) >= 5:
-        if sys.argv[4] == "True":
+        if sys.argv[4] == "True" or sys.argv[4] == "true":
             print("Data will be split into 70/30 of train/test")
             split_flag = True
         else:
