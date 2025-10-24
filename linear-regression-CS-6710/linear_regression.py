@@ -52,7 +52,7 @@ def NormalEquationSolver(X, y):
     rss = 0.5 * np.sum((y-predictions)**2)
 
     # Print results
-    print(f"Optimal Weight Vector: {w}")
+    print(f"Optimal Weight Vector: {w.flatten()}")
     print(f"RSS: {rss}")
 
     return w
@@ -245,7 +245,7 @@ def main():
             X_test = add_bias(X_test)
 
             final_weights = LinearRegression(X_train, y_train, alpha, epochs)
-            print(f"Final weights: {final_weights}")
+            print(f"Final weights: {final_weights.flatten()}")
 
             # calculate accuracy and final RSS
             accuracy, rss = run_tests(X_test,y_test, final_weights)
@@ -267,6 +267,7 @@ def main():
         X = add_bias(X)
         y = data.iloc[:, -1].values
         final_weights = LinearRegression(X, y, alpha, epochs)
+        print(f"Final Weights: {final_weights.flatten()}")
 
 
 
