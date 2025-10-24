@@ -19,17 +19,19 @@ def LinearRegression(X, y, alpha, epochs):
         alpha: learning rate
         epochs: number of epochs
     Returns
-        None
+        w: weights
     """
     # Check if normal equation can be applied
     if X.shape[1] == np.linalg.matrix_rank(X):
         print("Using Normal Equation Solver\n")
-        NormalEquationSolver(X,y)
+        w = NormalEquationSolver(X,y)
 
     # If not, use gradient descent
     else:
         print("Using Gradient Based Solver\n")
-        GradientBasedSolver(X,y,alpha,epochs)
+        w = GradientBasedSolver(X,y,alpha,epochs)
+    
+    return w
 
 
 def NormalEquationSolver(X, y):
@@ -179,17 +181,27 @@ def run_tests(X_test, y_test, weights):
 def main():
     """
     main() : Main driver method
+
+    Parameters:
+        None
+
+    Returns:
+        None
     """
+
+    # check that command line arguments are correct
     if len(sys.argv) < 4 or len(sys.argv) > 5:
         print("Correct format: 'python linear_regression.py data_file alpha epochs "
         "(FOR SPLITTING DATA): boolean (True or False)'")
         return
 
+    # parse command line args
     data_file = sys.argv[1]
     data = pd.read_csv(data_file)
     alpha = sys.argv[2]
     epochs = sys.argv [3]
 
+    # check if data needs split
     split_flag = False
     if len(sys.argv) >= 5:
         if sys.argv[4] == "True":
@@ -197,7 +209,8 @@ def main():
             split_flag = True
         else:
             pass
-
+    
+    # if data needs split, call split method and run 10 times
     if split_flag:
         accuracy_list = []
         rss_list = []
@@ -206,17 +219,22 @@ def main():
             print("Splitting data...")
             X_train, y_train, X_test, y_test = split_data(data)
             X_train = add_bias(X_train)
-            final_weights = LinearRegression(X_train, y_train, alpha, epochs)
 
+            final_weights = LinearRegression(X_train, y_train, alpha, epochs)
+            print(f"Final weights: {final_weights}")
+
+            # calculate accuracy and final RSS
             accuracy, rss = run_tests(X_test,y_test, final_weights)
+
             accuracy_list.append(accuracy)
             rss_list.append(rss)
 
+        # find average accuracy and associated standard dev.
         mean_acc = sum(accuracy_list)/len(accuracy_list)
         st_dev = (pd.Series(accuracy_list)).std()
         print(f"Mean accuracy: {mean_acc} | Standard Deviation: {st_dev}")
 
-            
+    # if no split, run as normal           
     else:
         X = data.iloc[:,:-1].values
         X = add_bias(X)
