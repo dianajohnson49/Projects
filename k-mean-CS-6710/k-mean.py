@@ -62,6 +62,11 @@ def calculate_inertia(data, centroids, labels):
 
     return inertia
 
+def find_opt_clusters(data, centroids, max_iters = 200, tolerance = 1e-4):
+
+
+    return centroids, centroid_labels
+
 def elbow(data):
     num_features = data.shape[1] - 1
     k_min = 1
@@ -73,14 +78,12 @@ def elbow(data):
         for j in range(i):
             centroids.append(strat1(data))
 
+        centroids, centroid_labels = find_opt_clusters(data, centroids)
         #TODO find the ideal centroids here / labels
 
 
         inertia = calculate_inertia(data,centroids,centroid_labels)
         inertia_1.append(inertia)
-
-
-    inertia_2 = []
 
 
 def main():
