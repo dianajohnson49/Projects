@@ -24,19 +24,19 @@ def combine_data(file1, file2):
 
 def strat1(data):
     num_features = data.shape[1] - 1
-    center = np.zeros(num_features)
+    centroid = np.zeros(num_features)
 
     for i in range(num_features):
         feature_min = data.iloc[:,i].min()
         feature_max = data.iloc[:,i].max()
 
-        center[i] = np.random.uniform(low=feature_min, high=feature_max)
+        centroid[i] = np.random.uniform(low=feature_min, high=feature_max)
     
-    return center
+    return centroid
 
 def strat2(data):
     num_features = data.shape[1] - 1
-    center = np.zeros(num_features)
+    centroid = np.zeros(num_features)
 
     for i in range(num_features):
         sorted_vals = np.sort(data.iloc[:,1].values)
@@ -50,9 +50,37 @@ def strat2(data):
         feature_min = np.min(new_vals)
         feature_max = np.max(new_vals)
 
-        center[i] = np.random.uniform(low=feature_min, high=feature_max)
+        centroid[i] = np.random.uniform(low=feature_min, high=feature_max)
 
-    return center
+    return centroid
+
+def calculate_inertia(data, centroids, labels):
+    inertia = 0.0
+    for i in range(len(data)):
+        centroid = centroids[labels[i]]
+        inertia += np.sum((data[i] - centroid) ** 2)
+
+    return inertia
+
+def elbow(data):
+    num_features = data.shape[1] - 1
+    k_min = 1
+    k_max = 5 #num_features-1
+
+    inertia_1 = []
+    for i in range(k_min,k_max+1):
+        centroids = []
+        for j in range(i):
+            centroids.append(strat1(data))
+
+        #TODO find the ideal centroids here / labels
+
+
+        inertia = calculate_inertia(data,centroids,centroid_labels)
+        inertia_1.append(inertia)
+
+
+    inertia_2 = []
 
 
 def main():
@@ -69,8 +97,7 @@ def main():
     red_wine = "winequality-white.csv"
     dataset = combine_data(white_wine, red_wine)
 
-    center = strat2(dataset)
-    print(center)
+
 
 # count # in each class
 #numpy.bincount
