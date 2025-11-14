@@ -263,6 +263,99 @@ def calculate_purity(labels, true_labels):
 
     return purity
 
+def visualize_pca(data):
+    """
+    visualize_pca() : Performs PCA and chooses either 2 or 3 componenets to plot so
+                    that cumulative variance >= 0.95. PLots a 2D or 3D plot depending on
+                    number of components chosen.
+
+    Parameters:
+        data: pd dataframe, dataset of features for analysis
+
+    Returns:
+        None
+    """
+    X = data.iloc[:, :-1].values
+    y = data["label"].values
+    n = X.shape[0]
+
+    X_mean_centered = X - np.mean(X, axis=0)
+
+    # covariance matrix
+    S = (X_mean_centered.T @ X_mean_centered) / (n-1)
+
+    # Eigendecomposition
+    eigenvalues, eigenvectors = np.linalg.eigh(S)
+
+    # sort eigenvectors for eigenvalue
+    # argsort() returns indeces of sorted array
+    sorted_idx = np.argsort(eigenvalues)[::-1]
+    eigenvalues = eigenvalues[sorted_idx]
+    eigenvectors = eigenvectors[:, sorted_idx]
+
+    # Normalize eigenvalues
+    eigenvalues_norm = eigenvalues / np.sum(eigenvalues)
+
+    # Determine if top 2 or 3 dimensions are needed for sum var >= 0.95
+    cumulative_sum = np.cumsum(eigenvalues_norm)
+
+    if cumulative_sum[1] >= 0.95:
+        dim = 2
+    else:
+        dim = 3
+    
+    print(f"Selected PCA dimensions: {dim}")
+    print(f"Cumulative normalized variance: {cumulative_sum[:dim]}")
+
+    # grab necessary components
+    components = eigenvectors[:, :dim]
+
+    # Visualize the data
+    X_pca = X_mean_centered @ components
+
+    if dim == 2:
+        plt.figure()
+        for c in np.unique(y):
+            plt.scatter(
+                X_pca[y == c, 0],
+                X_pca[y == c, 1],
+                label=f"Class {c}",
+                alpha=0.7,
+            )
+
+        # Plotting stuff
+        plt.title("PCA Projection (2D) - Variance ≥ 95%")
+        plt.xlabel("PC1")
+        plt.ylabel("PC2")
+        plt.grid(True)
+        plt.legend()
+        plt.show()
+    else: 
+    # dim = 3
+        fig = plt.figure()
+        # still one plot, but tells matplotlib 3d is needed
+        ax = fig.add_subplot(111, projection="3d")
+
+        # for each class, assign labels
+        for c in np.unique(y):
+            ax.scatter(
+                X_pca[y == c, 0],
+                X_pca[y == c, 1],
+                X_pca[y == c, 2],
+                label=f"Class {c}",
+                alpha=0.7,
+            )
+
+        # PLotting stuff
+        ax.set_title("PCA Projection (3D) - Variance ≥ 95%")
+        ax.set_xlabel("PC1")
+        ax.set_ylabel("PC2")
+        ax.set_zlabel("PC3")
+        ax.legend()
+        plt.show()
+        
+
+
 def main():
     """
     main() : Main driver method
@@ -281,11 +374,12 @@ def main():
     # Combine CSVs
     dataset = combine_data(white_wine, red_wine)
 
-    # Use elbow method to find optimal number of clusters, k
-    # elbow(dataset)
+    # Use elbow method to find optimal number of clusters, k (FOUND: k=4)
+    # Visualization of elbow method
+    elbow(dataset)
 
-    # found k = 4 to be best
-
+    # PCA Analysis
+    visualize_pca(dataset)
     
     # find the purity for each strategy
     k = 4
@@ -309,10 +403,5 @@ def main():
     print(f"Strategy 2 Purity (k=4): {purity2}")
 
 
-
-
-# linalg.eigh -> does eigendecomposition
-# do linalg.eigh(XXt) -> returns 1d array eigenvalues and 2d square array of eigenvectors
-# take top 2 to visualize 
 main()
 
