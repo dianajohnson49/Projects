@@ -315,6 +315,7 @@ def visualize_pca(data):
 
     if dim == 2:
         plt.figure()
+        # for each class, assign labels
         for c in np.unique(y):
             plt.scatter(
                 X_pca[y == c, 0],
