@@ -209,7 +209,7 @@ def elbow(data):
         inertia = calculate_inertia(data,centroids,centroid_labels)
         inertia_2.append(inertia)
     
-    
+    # Plotting stuff
     plt.figure()
 
     plt.plot(range(k_min,k_max+1), inertia_1, marker='o', label='Strategy 1')
@@ -224,8 +224,44 @@ def elbow(data):
     plt.legend()
     plt.show()
 
-def calculate_purity():
-    pass
+def calculate_purity(labels, true_labels):
+    """
+    calculate_purity() : Computes the purity for a given set of clusters
+
+    Parameters:
+        labels: predicted cluster labels
+        true_labels: true class labels
+
+    Returns:
+        Purity: float, calculated purity
+    """
+
+    labels = np.array(labels)
+    true_labels = np.array(true_labels)
+    # find number of classes
+    cluster_ids = np.unique(labels)
+
+    total_correct = 0
+    for cluster in cluster_ids:
+        # find points associated with current cluster
+        cluster_points = true_labels[labels == cluster]
+
+        # if no points assigned to cluster, move on
+        if len(cluster_points) == 0:
+            continue
+        
+        # how many points in the cluster have true labels
+        counts = np.bincount(cluster_points)
+
+        # find majority correct class
+        majority = counts.max()
+
+        # sum max overlap over all clusters
+        total_correct += majority
+
+    purity = total_correct / len(labels)
+
+    return purity
 
 def main():
     """
@@ -237,20 +273,43 @@ def main():
     Returns:
         None
     """
+
+    # Import datasets
     white_wine = "winequality-red.csv"
     red_wine = "winequality-white.csv"
+
+    # Combine CSVs
     dataset = combine_data(white_wine, red_wine)
 
-    elbow(dataset)
+    # Use elbow method to find optimal number of clusters, k
+    # elbow(dataset)
 
     # found k = 4 to be best
 
-    purity1 = calculate_purity()
-    purity2 = calculate_purity()
+    
+    # find the purity for each strategy
+    k = 4
+
+    # Strategy 1
+    centroids1 = []
+    for j in range(k):
+        centroids1.append(strat1(dataset))
+
+    centroids1, centroid1_labels = find_opt_clusters(dataset, k, centroids1)
+    purity1 = calculate_purity(dataset['label'].values, centroid1_labels)
+    print(f"Strategy 1 Purity (k=4): {purity1}")
+
+    # Strategy 2
+    centroids2 = []
+    for j in range(k):
+        centroids2.append(strat2(dataset))
+
+    centroids2, centroid2_labels = find_opt_clusters(dataset, k, centroids1)
+    purity2 = calculate_purity(dataset['label'].values, centroid2_labels)
+    print(f"Strategy 2 Purity (k=4): {purity2}")
 
 
-# count # in each class
-#numpy.bincount
+
 
 # linalg.eigh -> does eigendecomposition
 # do linalg.eigh(XXt) -> returns 1d array eigenvalues and 2d square array of eigenvectors
