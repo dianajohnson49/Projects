@@ -74,7 +74,7 @@ def strat2(data):
     centroid = np.zeros(num_features)
 
     for i in range(num_features):
-        sorted_vals = np.sort(data.iloc[:,1].values)
+        sorted_vals = np.sort(data.iloc[:,i].values)
 
         # indeces for 1st and 5th bins
         end_bin_1 = len(sorted_vals) // 5
@@ -101,15 +101,16 @@ def calculate_inertia(data, centroids, labels):
     Returns:
         inertia: float, total distortion
     """
+    X = data.iloc[:, :-1].values
+
     inertia = 0.0
-    for i in range(len(data)):
+    for i in range(len(X)):
         centroid = centroids[labels[i]]
-        inertia += np.sum((data[i] - centroid) ** 2)
+        inertia += np.sum((X[i] - centroid) ** 2)
 
     return inertia
 
-# TODO
-def find_opt_clusters(data, k, centroids, max_iters = 200, tolerance = 1e-4):
+def find_opt_clusters(data, k, centroids, max_iters = 200, tolerance = 1e-6):
     """
     find_opt_clusters() : Calculates the best centroids for a given set of data and given 
                         k value
@@ -126,10 +127,48 @@ def find_opt_clusters(data, k, centroids, max_iters = 200, tolerance = 1e-4):
         centroid_labels: best center for each data point
     """
 
+    # remove label column
+    X = np.array(data.iloc[:,:-1].values)
+    
+    centroids = np.array(centroids)
 
-    return centroids, centroid_labels
+    for _ in range(max_iters):
+        labels = np.zeros(len(X), dtype=int)
 
-#TODO
+        # find closest centroid for each points
+        for i in range(len(X)):
+            dists = []
+            for j in range(k):
+                d = np.sum((X[i] - centroids[j]) ** 2)
+                dists.append(d)
+            
+            # grabs index of smallest dist, which is the closest centroid
+            labels[i] = np.argmin(dists)
+        
+
+        # initialize zeros matrix, matching current centroid shape
+        new_centroids = np.zeros_like(centroids)
+
+        # Re-compute centroids
+        for j in range(k):
+            # pull out each point that matches the label for the current cluster j
+            cluster_points = X[labels == j]
+            if len(cluster_points) > 0:
+                # get a mean for each feature
+                new_centroids[j] = np.mean(cluster_points, axis=0)
+            else:
+                # keep old center
+                new_centroids[j] = centroids[j]
+
+        # euclidean dist of centroids
+        if np.linalg.norm(new_centroids-centroids) < tolerance:
+            break
+        
+        centroids = new_centroids
+
+    return centroids, labels
+
+
 def elbow(data):
     """
     elbow() : Plots the inertias for different k's for the user to find the optimal
@@ -143,7 +182,7 @@ def elbow(data):
     """
     num_features = data.shape[1] - 1
     k_min = 1
-    k_max = 5 #num_features-1
+    k_max = num_features-1
 
     inertia_1 = []
     
@@ -152,13 +191,41 @@ def elbow(data):
         for j in range(i):
             centroids.append(strat1(data))
 
-        centroids, centroid_labels = find_opt_clusters(data, k, centroids)
-        #TODO find the ideal centroids here / labels
-
+        centroids, centroid_labels = find_opt_clusters(data, i, centroids)
 
         inertia = calculate_inertia(data,centroids,centroid_labels)
         inertia_1.append(inertia)
 
+    
+    inertia_2 = []
+    
+    for i in range(k_min,k_max+1):
+        centroids = []
+        for j in range(i):
+            centroids.append(strat1(data))
+
+        centroids, centroid_labels = find_opt_clusters(data, i, centroids)
+
+        inertia = calculate_inertia(data,centroids,centroid_labels)
+        inertia_2.append(inertia)
+    
+    
+    plt.figure()
+
+    plt.plot(range(k_min,k_max+1), inertia_1, marker='o', label='Strategy 1')
+    plt.plot(range(k_min,k_max+1), inertia_2, marker='s', label='Strategy 2')
+    plt.title("Elbow Method")
+    plt.xlabel("k")
+    plt.ylabel("Inertia")
+
+    plt.xticks(range(k_min,k_max+1))
+
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+def calculate_purity():
+    pass
 
 def main():
     """
@@ -174,6 +241,12 @@ def main():
     red_wine = "winequality-white.csv"
     dataset = combine_data(white_wine, red_wine)
 
+    elbow(dataset)
+
+    # found k = 4 to be best
+
+    purity1 = calculate_purity()
+    purity2 = calculate_purity()
 
 
 # count # in each class
