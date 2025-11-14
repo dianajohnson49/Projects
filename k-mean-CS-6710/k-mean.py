@@ -108,6 +108,7 @@ def calculate_inertia(data, centroids, labels):
 
     return inertia
 
+# TODO
 def find_opt_clusters(data, k, centroids, max_iters = 200, tolerance = 1e-4):
     """
     find_opt_clusters() : Calculates the best centroids for a given set of data and given 
@@ -128,6 +129,7 @@ def find_opt_clusters(data, k, centroids, max_iters = 200, tolerance = 1e-4):
 
     return centroids, centroid_labels
 
+#TODO
 def elbow(data):
     """
     elbow() : Plots the inertias for different k's for the user to find the optimal
@@ -144,6 +146,7 @@ def elbow(data):
     k_max = 5 #num_features-1
 
     inertia_1 = []
+    
     for i in range(k_min,k_max+1):
         centroids = []
         for j in range(i):
