@@ -62,14 +62,14 @@ def split_zoo_data(data, ratio=0.2):
     test_idx = []
 
     for c in classes:
-        class_idx = data[data['type'] == c].index
+        class_idx = data[data['type'] == c].index.to_numpy()
         np.random.shuffle(class_idx)
         # grab one sample per class for test set
         test_idx.append(class_idx[0])
     
     # grab rest of samples for test set
     # remove already chosen test samples
-    remaining_idx = data.index.different(test_idx)
+    remaining_idx = data.index.difference(test_idx).to_numpy()
     # find num samples needed to meet ratio
     num_samples_needed = int(ratio * len(data)) - len(test_idx)
     # shuffle the remaining samples and select num needed
@@ -104,7 +104,7 @@ def split_weather_data(data, ratio=0.2):
 
     num_samples = X.shape[0]
     # use indices to shuffle data for random split
-    indices = np.arrange(num_samples)
+    indices = np.arange(num_samples)
     np.random.shuffle(indices)
 
     # pull out indices for train and test
@@ -253,7 +253,7 @@ def calculate_accuracy(y_true, y_pred):
         accuracy: float, fraction of correct predictions (between 0 and 1)
     """
     accuracy = np.mean(y_true == y_pred)
-    return accuracy
+    return round(float(accuracy),3)
 
 def main():
     """
@@ -267,9 +267,75 @@ def main():
     """    
     zoo_data = load_zoo_data("zoo/zoo.data")
     weather_data = load_weather_data("WeatherAndPlayData.txt")
+    print("---------- ZOO DATA ----------")
+    zoo_exact_acc = []
+    zoo_naive_acc = []
+    zoo_lr_acc = []
 
+    for i in range(10):
+        X_train, y_train, X_test, y_test = split_zoo_data(zoo_data)
+
+        # Exact Bayes
+        pred_exact = exact_bayes(X_train, y_train, X_test)
+        zoo_exact_acc.append(calculate_accuracy(y_test, pred_exact))
+        
+        # Naive Bayes
+        pred_naive = naive_bayes(X_train, y_train, X_test)
+        zoo_naive_acc.append(calculate_accuracy(y_test,pred_naive))
+        
+        # Linear Regression
+        X_train_bias = add_bias(X_train)
+        X_test_bias = add_bias(X_test)
+        weights = LinearRegression(X_train_bias, y_train, 0.002, 1000)
+        accuracy, _ = run_tests(X_test_bias, y_test, weights)
+        zoo_lr_acc.append(accuracy)
     
+    avg_exact_acc = round(np.mean(zoo_exact_acc),4)
+    std_exact_acc = round(np.std(zoo_exact_acc),4)
+    print(f"Zoo Exact Bayes Avg Accuracy: {avg_exact_acc}\nStandard Dev: {std_exact_acc}")
 
+    avg_naive_acc = round(np.mean(zoo_naive_acc),4)
+    std_naive_acc = round(np.std(zoo_naive_acc),4)
+    print(f"Zoo Naive Bayes Avg Accuracy: {avg_naive_acc}\nStandard Dev: {std_naive_acc}")
+        
+    avg_lr_acc = round(np.mean(zoo_lr_acc),4)
+    std_lr_acc = round(np.std(zoo_lr_acc),4)
+    print(f"Zoo LR Avg Accuracy: {avg_lr_acc}\nStandard Dev: {std_lr_acc}\n")
 
+    print("\n------ WEATHER DATA ------")
+    weather_exact_acc = []
+    weather_naive_acc = []
+    weather_lr_acc = []
 
-main()
+    for i in range(10):
+        X_train, y_train, X_test, y_test = split_weather_data(zoo_data)
+
+        # Exact Bayes
+        pred_exact = exact_bayes(X_train, y_train, X_test)
+        weather_exact_acc.append(calculate_accuracy(y_test, pred_exact))
+        
+        # Naive Bayes
+        pred_naive = naive_bayes(X_train, y_train, X_test)
+        weather_naive_acc.append(calculate_accuracy(y_test,pred_naive))
+        
+        # Linear Regression
+        X_train_bias = add_bias(X_train)
+        X_test_bias = add_bias(X_test)
+        weights = LinearRegression(X_train_bias, y_train, 0.002, 1000)
+        accuracy, _ = run_tests(X_test_bias, y_test, weights)
+        weather_lr_acc.append(accuracy)
+    
+    avg_exact_acc_weather = round(np.mean(weather_exact_acc),4)
+    std_exact_acc_weather = round(np.std(weather_exact_acc),4)
+    print(f"Weather Exact Bayes Avg Accuracy: {avg_exact_acc_weather}\nStandard Dev: {std_exact_acc_weather}")
+
+    avg_naive_acc_weather = round(np.mean(weather_naive_acc),4)
+    std_naive_acc_weather = round(np.std(weather_naive_acc),4)
+    print(f"Zoo Naive Bayes Avg Accuracy: {avg_naive_acc_weather}\nStandard Dev: {std_naive_acc_weather}")
+        
+    avg_lr_acc_weather = round(np.mean(weather_lr_acc),4)
+    std_lr_acc_weather = round(np.std(weather_lr_acc),4)
+    print(f"Weather LR Avg Accuracy: {avg_lr_acc_weather}\nStandard Dev: {std_lr_acc_weather}\n")
+
+if __name__ == "__main__":
+    main()
