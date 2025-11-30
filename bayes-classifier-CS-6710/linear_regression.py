@@ -23,12 +23,12 @@ def LinearRegression(X, y, alpha, epochs):
     """
     # Check if normal equation can be applied
     if X.shape[1] == np.linalg.matrix_rank(X):
-        print("Using Normal Equation Solver\n")
+        #print("\nUsing Normal Equation Solver")
         w = NormalEquationSolver(X,y)
 
     # If not, use gradient descent
     else:
-        print("Using Gradient Based Solver\n")
+        #print("\nUsing Gradient Based Solver")
         w = GradientBasedSolver(X,y,alpha,epochs)
     
     return w
@@ -52,8 +52,8 @@ def NormalEquationSolver(X, y):
     rss = 0.5 * np.sum((y-predictions)**2)
 
     # Print results
-    print(f"Optimal Weight Vector: {w.flatten()}")
-    print(f"RSS: {rss}")
+    #print(f"Optimal Weight Vector: {w.flatten()}")
+    #print(f"RSS: {rss}")
 
     return w
     
@@ -84,7 +84,7 @@ def GradientBasedSolver(X, y, alpha, epochs):
     rss_list = [] 
     goal_cost = 10e-5
 
-    print(f"Initial RSS: {current_cost}")
+    #print(f"Initial RSS: {current_cost}")
     
     for epoch in range(epochs):
         # Calculate the gradient
@@ -99,23 +99,13 @@ def GradientBasedSolver(X, y, alpha, epochs):
 
         rss_list.append(current_cost)
 
-        print(f"Epoch {epoch + 1}: RSS = {current_cost}")
+        #print(f"Epoch {epoch + 1}: RSS = {current_cost}")
 
         # Check current cost/error
         if current_cost <= goal_cost:
             break
     
-    print(f"Learned Weights: {w.flatten()}")
-
-    plt.figure()
-
-    plt.plot(range(1, len(rss_list)+1), rss_list)
-    plt.title("Gradient Descent Convergence")
-    plt.xlabel("Epoch")
-    plt.ylabel("RSS")
-
-    plt.grid(True)
-    plt.show(block=False)
+    #print(f"Learned Weights: {w.flatten()}")
 
     return w
 
@@ -134,7 +124,7 @@ def split_data(data):
     y = data.iloc[:, -1].values.reshape(-1, 1)
     num_samples = X.shape[0]
 
-    train_ratio = 0.7
+    train_ratio = 0.8
     train_size = int(train_ratio * num_samples)
 
     # use indices to shuffle data for random split
@@ -227,7 +217,7 @@ def main():
     split_flag = False
     if len(sys.argv) >= 5:
         if sys.argv[4] == "True" or sys.argv[4] == "true":
-            print("Data will be split into 70/30 of train/test")
+            print("Data will be split into 80/20 of train/test")
             split_flag = True
         else:
             pass
@@ -238,14 +228,14 @@ def main():
         rss_list = []
 
         for i in range(10):
-            print("Splitting data...")
+            #print("Splitting data...")
             X_train, y_train, X_test, y_test = split_data(data)
             # add bias column
             X_train = add_bias(X_train)
             X_test = add_bias(X_test)
 
             final_weights = LinearRegression(X_train, y_train, alpha, epochs)
-            print(f"Final weights: {final_weights.flatten()}")
+            #print(f"Final weights: {final_weights.flatten()}")
 
             # calculate accuracy and final RSS
             accuracy, rss = run_tests(X_test,y_test, final_weights)
@@ -257,8 +247,8 @@ def main():
         mean_acc = sum(accuracy_list)/len(accuracy_list)
         st_dev = (pd.Series(accuracy_list)).std()
         print(f"Mean accuracy: {mean_acc} | Standard Deviation: {st_dev}")
-        print(f"\nAccuracy list: {accuracy_list}")
-        print(f"\nRSS list: {rss_list}")
+        #print(f"\nAccuracy list: {accuracy_list}")
+        #print(f"\nRSS list: {rss_list}")
 
     # if no split, run as normal           
     else:
@@ -267,7 +257,7 @@ def main():
         X = add_bias(X)
         y = data.iloc[:, -1].values
         final_weights = LinearRegression(X, y, alpha, epochs)
-        print(f"Final Weights: {final_weights.flatten()}")
+        #print(f"Final Weights: {final_weights.flatten()}")
 
 
 if __name__ == "__main__":
