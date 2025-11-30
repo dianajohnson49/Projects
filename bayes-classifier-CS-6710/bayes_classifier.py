@@ -6,6 +6,7 @@ Diana Johnson
 
 import numpy as np
 import pandas as pd
+from linear_regression import LinearRegression, split_data, add_bias, run_tests
 
 # Import datasets
 def load_zoo_data(zoo_path):
@@ -22,12 +23,90 @@ def load_zoo_data(zoo_path):
     df = df.drop(columns=["animal_name"])
     return df
 
-def load_weather_and_play_data(weather_path):
+def load_weather_data(weather_path):
     """
     
     """
     df = pd.read_csv(weather_path)
     return df
+
+
+def split_zoo_data(data, ratio=0.2):
+    """
+    split_zoo_data(): randomly splits a dataset 80:20 of train vs test data, making sure 
+                    at least one sample per class is in the test set
+
+    Parameters:
+        data: Dataset to split
+
+    Returns:
+        X_train: Dataset of X train data (80%)
+        y_train: Dataset of y test data (20%)
+        X_test: Dataset of X test data (20%)
+        y_test: Dataset of y test data (20%)
+    """
+    classes = data['type'].unique()
+    test_idx = []
+
+    for c in classes:
+        class_idx = data[data['type'] == c].index
+        np.random.shuffle(class_idx)
+        # grab one sample per class for test set
+        test_idx.append(class_idx[0])
+    
+    # grab rest of samples for test set
+    # remove already chosen test samples
+    remaining_idx = data.index.different(test_idx)
+    # find num samples needed to meet ratio
+    num_samples_needed = int(ratio * len(data)) - len(test_idx)
+    # shuffle the remaining samples and select num needed
+    np.random.shuffle(remaining_idx)
+    test_idx.extend(remaining_idx[:num_samples_needed])
+
+    train_idx = data.index.difference(test_idx)
+
+    # pull out relevant feature information and convert to numpy array using .values
+    X_train = data.loc[train_idx].drop(columns=['type']).values
+    y_train = data.loc[train_idx, 'type'].values
+    X_test = data.loc[test_idx].drop(columns=['type']).values
+    y_test = data.loc[test_idx, 'type'].values
+
+    return X_train, y_train, X_test, y_test
+
+def split_weather_data(data, ratio=0.2):
+    """
+    split_weather_data(): randomly splits a dataset 80:20 of train vs test data
+
+    Parameters:
+        data: Dataset to split
+
+    Returns:
+        X_train: Dataset of X train data (80%)
+        y_train: Dataset of y test data (20%)
+        X_test: Dataset of X test data (20%)
+        y_test: Dataset of y test data (20%)
+    """
+    X = data.iloc[:, :-1].values
+    y = data.iloc[:, -1].values
+
+    num_samples = X.shape[0]
+    # use indices to shuffle data for random split
+    indices = np.arrange(num_samples)
+    np.random.shuffle(indices)
+
+    # pull out indices for train and test
+    test_size = int(ratio * num_samples)
+    test_idx = indices[:test_size]
+    train_idx = indices[test_size:]
+
+    # find X and y datasets
+    X_train = X[train_idx]
+    y_train = y[train_idx]
+    X_test = X[test_idx]
+    y_test = y[test_idx]
+
+    return X_train, y_train, X_test, y_test
+
 
 def exact_bayes(X_train, y_train, X_test):
     """
@@ -70,7 +149,7 @@ def exact_bayes(X_train, y_train, X_test):
 
         predictions.append(max_class)
     
-    return predictions
+    return np.array(predictions)
 
 def naive_bayes(X_train, y_train, X_test):
     """
@@ -127,4 +206,20 @@ def naive_bayes(X_train, y_train, X_test):
 
         predictions.append(max_class)
 
-    return predictions
+    return np.array(predictions)
+
+def calculate_accuracy(y_true, y_pred):
+    """
+    
+    """
+    accuracy = np.mean(y_true == y_pred)
+    return accuracy
+
+def main():
+    zoo_data = load_zoo_data("zoo/zoo.data")
+    weather_data = load_weather_data("WeatherAndPlayData.txt")
+
+
+
+
+main()
