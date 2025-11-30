@@ -270,6 +270,5 @@ def main():
         print(f"Final Weights: {final_weights.flatten()}")
 
 
-
-
-main()
+if __name__ == "__main__":
+    main()
