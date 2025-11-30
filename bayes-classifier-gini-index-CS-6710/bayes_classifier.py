@@ -273,6 +273,7 @@ def main():
     zoo_lr_acc = []
 
     for i in range(10):
+        # split data
         X_train, y_train, X_test, y_test = split_zoo_data(zoo_data)
 
         # Exact Bayes
@@ -290,6 +291,7 @@ def main():
         accuracy, _ = run_tests(X_test_bias, y_test, weights)
         zoo_lr_acc.append(accuracy)
     
+    # calculate average accuracies
     avg_exact_acc = round(np.mean(zoo_exact_acc),4)
     std_exact_acc = round(np.std(zoo_exact_acc),4)
     print(f"Zoo Exact Bayes Avg Accuracy: {avg_exact_acc}\nStandard Dev: {std_exact_acc}")
@@ -308,6 +310,7 @@ def main():
     weather_lr_acc = []
 
     for i in range(10):
+        # split data
         X_train, y_train, X_test, y_test = split_weather_data(zoo_data)
 
         # Exact Bayes
@@ -325,6 +328,7 @@ def main():
         accuracy, _ = run_tests(X_test_bias, y_test, weights)
         weather_lr_acc.append(accuracy)
     
+    # calculate average accuracies
     avg_exact_acc_weather = round(np.mean(weather_exact_acc),4)
     std_exact_acc_weather = round(np.std(weather_exact_acc),4)
     print(f"Weather Exact Bayes Avg Accuracy: {avg_exact_acc_weather}\nStandard Dev: {std_exact_acc_weather}")
@@ -336,6 +340,8 @@ def main():
     avg_lr_acc_weather = round(np.mean(weather_lr_acc),4)
     std_lr_acc_weather = round(np.std(weather_lr_acc),4)
     print(f"Weather LR Avg Accuracy: {avg_lr_acc_weather}\nStandard Dev: {std_lr_acc_weather}\n")
+
+
 
 if __name__ == "__main__":
     main()
