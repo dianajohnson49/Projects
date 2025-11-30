@@ -11,7 +11,14 @@ from linear_regression import LinearRegression, split_data, add_bias, run_tests
 # Import datasets
 def load_zoo_data(zoo_path):
     """
-    
+    load_zoo_data(): Loads the Zoo dataset from a CSV file, removes the 'animal_name' column,
+                     and returns it as a dataframe
+
+    Parameters:
+        zoo_path: Path to the Zoo dataset CSV file
+
+    Returns:
+        df: Pandas dataframe of Zoo data without the 'animal_name' column
     """
     col_names = [
         "animal_name", "hair", "feathers", "eggs", "milk", "airborne",
@@ -25,7 +32,13 @@ def load_zoo_data(zoo_path):
 
 def load_weather_data(weather_path):
     """
-    
+    load_weather_data(): Loads the weather and play dataset from a CSV file
+
+    Parameters:
+        weather_path: Path to the weather dataset CSV file
+
+    Returns:
+        df: Pandas dataframe of the weather data
     """
     df = pd.read_csv(weather_path)
     return df
@@ -110,8 +123,18 @@ def split_weather_data(data, ratio=0.2):
 
 def exact_bayes(X_train, y_train, X_test):
     """
-    
+    exact_bayes(): Calculates full joint probabilities for all unique feature patterns per class in 
+                the training set and predicts the class label of each test sample
+
+    Parameters:
+        X_train: numpy array of training features
+        y_train: numpy array of training labels
+        X_test: numpy array of test features
+
+    Returns:
+        predictions: numpy array of predicted class labels for the test data
     """
+    
     X_train = X_train.astype(int)
     y_train = y_train.astype(int)
 
@@ -153,7 +176,16 @@ def exact_bayes(X_train, y_train, X_test):
 
 def naive_bayes(X_train, y_train, X_test):
     """
-    
+    naive_bayes(): Estimates conditional probabilities of each feature given the class and 
+                predicts the class label for each test sample assuming feature independence
+
+    Parameters:
+        X_train: numpy array of training features
+        y_train: numpy array of training labels
+        X_test: numpy array of test features
+
+    Returns:
+        predictions: numpy array of predicted class labels for the test data
     """
     X_train = X_train.astype(int)
     y_train = y_train.astype(int)
@@ -210,15 +242,33 @@ def naive_bayes(X_train, y_train, X_test):
 
 def calculate_accuracy(y_true, y_pred):
     """
-    
+    calculate_accuracy(): Computes the accuracy of predictions by comparing predicted
+                        labels to true labels
+
+    Parameters:
+        y_true: numpy array of true labels
+        y_pred: numpy array of predicted labels
+
+    Returns:
+        accuracy: float, fraction of correct predictions (between 0 and 1)
     """
     accuracy = np.mean(y_true == y_pred)
     return accuracy
 
 def main():
+    """
+    main() : Main driver method
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """    
     zoo_data = load_zoo_data("zoo/zoo.data")
     weather_data = load_weather_data("WeatherAndPlayData.txt")
 
+    
 
 
 
