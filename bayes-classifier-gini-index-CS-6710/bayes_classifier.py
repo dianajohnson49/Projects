@@ -335,7 +335,7 @@ def main():
 
     avg_naive_acc_weather = round(np.mean(weather_naive_acc),4)
     std_naive_acc_weather = round(np.std(weather_naive_acc),4)
-    print(f"Zoo Naive Bayes Avg Accuracy: {avg_naive_acc_weather}\nStandard Dev: {std_naive_acc_weather}")
+    print(f"Weather Naive Bayes Avg Accuracy: {avg_naive_acc_weather}\nStandard Dev: {std_naive_acc_weather}")
         
     avg_lr_acc_weather = round(np.mean(weather_lr_acc),4)
     std_lr_acc_weather = round(np.std(weather_lr_acc),4)
